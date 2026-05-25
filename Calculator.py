@@ -9,20 +9,20 @@ def menu():
     print("Remainder = % ")
     print("Power = P ")
     print("Root = R ")
-    print("End = Done or = ")
+
 
 def get_user_num():
 
     while True:
         try:
-            num = (input("Write the Number(q to Quit): "))
-            if num.lower() or num == "=" or num.lower() == "q":
+            num = input("Write the Number(q to Quit): ")
+            if num.lower() == "q":
                 return num
             else:
                 num = float(num)
-                return num    
+                return num
         except ValueError:
-            print("Error:Only Select Number")
+            print("Error: Only Select Number")
             continue
 
 def get_user_oper():
@@ -31,151 +31,149 @@ def get_user_oper():
 
 # Use to Check any Invalid value for the Specific Operation
 
-def check_value(first_num,second_num,user_oper):
-    if user_oper == "/" or user_oper == "%":
-        if second_num == 0:
-            print(f"{first_num} can't be Divided by Zero(0)")
-            return True
-            
-    elif user_oper == "p":
-        if second_num < 0 and first_num == 0:
-            print("Zero can't have a Negative Power")
-            return True
-        elif second_num == 0 and first_num == 0:
-            print("Both Power and Base Can't be Zero")
-            return True
-
-    elif user_oper == "r":
-        if second_num == 0:
-            print("Root degree cannot be zero")
-            return True
-        
-        if first_num < 0:
-            if second_num % 2 == 0:
-                print("Even root of a negative number is not a real number")
-                return True
-            
-        if second_num == 1 or second_num == -1:
-            print("Root can't be Postive or Negative one (1)")
-            return True
-    return False
-        
-# Find Invalid Operation
-
-def check_operation(user_oper):
-
-    if user_oper not in ["+","-","*","/","%","p","r","q"]:
-        print("You selected a Invalid Operation.")
+def check_divide(x,y):
+    if y == 0:
+        print(f"{x} can't be Divided by Zero(0)")
         return True
     return False
 
-def add(list_num):
-    total = 0
-    for num in list_num:
-        total += num
-    return total
+def check_remainder(x,y):
+    if y == 0:
+        print(f"{x} can't be Divided by Zero(0)")
+        return True
+    return False
 
-def subtract(list_num):
-    total = 0
-    for num in list_num:
-        total += num
-    return total
+def check_power(x,y):
+    if y < 0 and x == 0:
+        print("Zero can't have a Negative Power")
+        return True
+    elif y == 0 and x == 0:
+        print("Both Power and Base Can't be Zero")
+        return True
+    return False
 
-def multiply(list_num):
-    total = 0
-    for num in list_num:
-        total *= num
-    return total
+def check_root(x,y):
+    if y == 0:
+        print("Root degree cannot be zero")
+        return True
+    elif x < 0:
+        if y % 2 == 0:
+            print("Even root of a negative number is not a real number")
+            return True
 
-def divide(list_num):
-    total = 0
-    for num in list_num:
-        total /= num
-    return total
+    
+# Find Invalid Operation
 
-def remainder(list_num):
-    total = 0
-    for num in list_num:
-        total %= num
-    return total
+def check_operation(user_oper):
+    if user_oper not in ["+", "-", "*", "/", "%", "p", "r"]:
+        print("You selected an Invalid Operation.")
+        return True
+    return False
 
-def power(list_num):
-    total = 0
-    for num in list_num:
-        total = num ** num
-    return total
+def get_result(user_oper,x, y):
+    operation_dic = {
+        "+": add,
+        "-": subtract,
+        "*": multiply,
+        "/": divide,
+        "%": remainder,
+        "p": power,
+        "r": root,
+    }
+    try:
+        result = operation_dic[user_oper](x, y)
+        return result
+    except OverflowError:
+        print("You wrote too big of a number")
+        return None
+    except ZeroDivisionError:
+        print("You Wrote Zero in Wrong Operation")
+        return None
+    
+def add(x, y):
+    return x + y
 
-def root(list_num):
-    total = 0
-    for num in list_num:
-        total = num ** (1/num)
-    return total
+def subtract(x, y):
+    return x - y
 
-# The Main body of Code which controll the flow of it
+def multiply(x, y):
+    return x * y
+
+def divide(x, y):
+    return x / y
+
+def remainder(x, y):
+    return x % y
+
+def power(x, y):
+    return x ** y
+
+def root(x, y):
+    if x < 0 and y % 2 != 0:
+        return -((-x) ** (1 / y))
+    else:
+        return x ** (1 / y)
+
+# The Main body of Code which controls the flow of it
 
 def main():
-
-    operation_dic = {
-        "+" :add,
-        "-" :subtract,
-        "*" :multiply,
-        "/" :divide,
-        "%" :remainder,
-        "p" :power,
-        "r" :root,
+    menu()
+    operation_check = {
+        "/" : check_divide,
+        "%" : check_remainder,
+        "p" : check_power,
+        "r" : check_root
     }
-
-    second_num = 5
-
-    repeat = True
-
+    # This get the First Result
     while True:
-
-        if repeat:
-            menu()
-
-        list_num = []
-        list_oper = []
+        # Get First Number
         first_num = get_user_num()
-        list_num.append(first_num)
         # Use to Quit Program
         if first_num == "q":
             break
+        # Get The Operation Sign
         user_oper = get_user_oper()
+        # Check the Operation
         if check_operation(user_oper):
             continue
-        list_oper.append(user_oper)
-        #Use to Check any Invalid value for the Specific Operation
-        #I need th change this function for multi-number system
-        # if check_value(first_num,second_num,user_oper):
-            # continue
-            
-        #Stop the Input and Doing the Proces
-        if "done" not in list_num or "=" not in list_num:
-            repeat = False
+        # Get the Second Number
+        second_num = get_user_num()
+        # Use to Check any Invalid value for the Specific Operation
+        if operation_check[user_oper](first_num,second_num):
             continue
-
         # Do the Main Process for Calculator
-        
-        try:
-            result = operation_dic[user_oper](first_num,second_num)
-
-        # Handles the Exception of Program
-
-        except OverflowError:
-            print("You wrote too big of a number")
-            continue
-        except ZeroDivisionError:
-            print("You Wrote Zero in Wrong Operation")
-            continue
-
+        result = get_result(user_oper,first_num, second_num)
         # Show us the Result
-
         if result is None:
-            print("You Selected a Invalid Operation")
+            print("Error")
+            continue
         else:
-            print(f"Your Result is {result}")
-        
+          print(f"Your Result is {result}")
+          break
     
+    # To get Infinite Result System
+    while True:
+        # Get The Operation Sign
+        user_oper = get_user_oper()
+        # Use to Quit Program
+        if user_oper == "q":
+            break
+        # Check the Operation
+        if check_operation(user_oper):
+            continue
+        current_num = get_user_num()
+        # Use to Check any Invalid value for the Specific Operation
+        if operation_check[user_oper](first_num,second_num):
+            continue
+        # Do the Main Process for Calculator
+        result = get_result(user_oper,result,current_num)
+        # Show us the Result
+        if result is None:
+            print("Error")
+            continue
+        else:
+          print(f"Your Result is {result}")
+          continue
+
 if __name__ == "__main__":
     main()
